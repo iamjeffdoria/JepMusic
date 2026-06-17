@@ -1,98 +1,92 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HomeHeader from "../../components/HomeHeader";
+import SectionHeader from "../../components/SectionHeader";
+import SongCard from "../../components/SongCard";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const DUMMY_SONGS = [
+  {
+    id: "1",
+    title: "Blinding Lights",
+    artist: "The Weeknd",
+    thumbnail: "https://picsum.photos/seed/song1/200",
+    duration: "3:20",
+  },
+  {
+    id: "2",
+    title: "Shape of You",
+    artist: "Ed Sheeran",
+    thumbnail: "https://picsum.photos/seed/song2/200",
+    duration: "3:53",
+  },
+  {
+    id: "3",
+    title: "Levitating",
+    artist: "Dua Lipa",
+    thumbnail: "https://picsum.photos/seed/song3/200",
+    duration: "3:23",
+  },
+];
 
-export default function HomeScreen() {
+const DUMMY_FEATURED = [
+  {
+    id: "1",
+    title: "Top Hits 2024",
+    thumbnail: "https://picsum.photos/seed/feat1/400",
+  },
+  {
+    id: "2",
+    title: "Chill Vibes",
+    thumbnail: "https://picsum.photos/seed/feat2/400",
+  },
+  {
+    id: "3",
+    title: "OPM Classics",
+    thumbnail: "https://picsum.photos/seed/feat3/400",
+  },
+];
+
+export default function Home() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView className="flex-1 bg-black">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <HomeHeader />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* Featured */}
+        <SectionHeader title="Featured" />
+        <FlatList
+          data={DUMMY_FEATURED}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+          renderItem={({ item }) => (
+            <TouchableOpacity>
+              <Image
+                source={{ uri: item.thumbnail }}
+                className="w-48 h-48 rounded-xl"
+              />
+              <Text className="text-white text-sm font-semibold mt-2">{item.title}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+        {/* Trending */}
+        <View className="mt-6 px-4">
+          <SectionHeader title="Trending Now" />
+          {DUMMY_SONGS.map((song) => (
+            <SongCard key={song.id} {...song} />
+          ))}
+        </View>
+
+        {/* Recently Played */}
+        <View className="mt-2 px-4 mb-6">
+          <SectionHeader title="Recently Played" />
+          {DUMMY_SONGS.slice().reverse().map((song) => (
+            <SongCard key={song.id} {...song} />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
